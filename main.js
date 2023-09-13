@@ -1,32 +1,67 @@
 let xPos = 0;
 
+const imageAPI = 'https://dog.ceo/api/breeds/image/random';
 
-gsap.timeline()
-    .set('.ring', { rotationY: 180, cursor: 'grab' }) //set initial rotationY so the parallax jump happens off screen
-    .set('.img', { // apply transform rotations to each image
-        rotateY: (i) => i * -36,
-        transformOrigin: '50% 50% 500px',
-        z: -500,
-        backgroundImage: (i) => 'url(https://picsum.photos/id/' + (i + 32) + '/600/400/)',
-        backgroundPosition: (i) => getBgPos(i),
-        backfaceVisibility: 'hidden'
-    })
-    .from('.img', {
-        duration: 1.5,
-        y: 200,
-        opacity: 0,
-        stagger: 0.1,
-        ease: 'expo'
-    })
-    .add(() => {
-        $('.img').on('mouseenter', (e) => {
-            let current = e.currentTarget;
-            gsap.to('.img', { opacity: (i, t) => (t == current) ? 1 : 0.5, ease: 'power3' })
+
+
+
+async function fetchRandomImages() {
+    const numberOfImages = 10;
+    const imageUrls = [];
+    for (let i = 0; i < numberOfImages; i++) {
+        try {
+            const response = await fetch(imageAPI);
+            const data = await response.json();
+            const imageUrl = data.message;
+            imageUrls.push(imageUrl);
+
+            if (imageUrls.length === numberOfImages) {
+                return imageUrls;
+            }
+
+        } catch (error) {
+            console.error('Lỗi khi lấy hình ảnh từ API: ', error);
+        }
+    }
+}
+
+async function createTimelineWithImages() {
+    //Get array url
+    const imageUrls = await fetchRandomImages();
+
+    gsap.timeline()
+        .set('.ring', { rotationY: 180, cursor: 'grab' }) //set initial rotationY so the parallax jump happens off screen
+        .set('.img', { // apply transform rotations to each image
+            rotateY: (i) => i * -36,
+            transformOrigin: '50% 50% 500px',
+            z: -500,
+            backgroundImage: (i) => {
+                urlImage = 'url("' + imageUrls[i] + '")';
+                console.log(urlImage);
+                return urlImage;
+            },
+            backgroundPosition: (i) => getBgPos(i),
+            backfaceVisibility: 'hidden'
         })
-        $('.img').on('mouseleave', (e) => {
-            gsap.to('.img', { opacity: 1, ease: 'power2.inOut' })
+        .from('.img', {
+            duration: 1.5,
+            y: 200,
+            opacity: 0,
+            stagger: 0.1,
+            ease: 'expo'
         })
-    }, '-=0.5')
+        .add(() => {
+            $('.img').on('mouseenter', (e) => {
+                let current = e.currentTarget;
+                gsap.to('.img', { opacity: (i, t) => (t == current) ? 1 : 0.5, ease: 'power3' })
+            })
+            $('.img').on('mouseleave', (e) => {
+                gsap.to('.img', { opacity: 1, ease: 'power2.inOut' })
+            })
+        }, '-=0.5')
+}
+
+createTimelineWithImages();
 
 $(window).on('mousedown touchstart', dragStart);
 $(window).on('mouseup touchend', dragEnd);
