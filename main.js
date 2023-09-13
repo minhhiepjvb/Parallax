@@ -20,11 +20,6 @@ async function fetchRandomImages() {
             console.error('Lỗi khi lấy hình ảnh từ API: ', error);
         }
     }
-}
-
-async function createTimelineWithImages() {
-    //Get array url
-    const imageUrls = await fetchRandomImages();
 
     gsap.timeline()
         .set('.ring', { rotationY: 180, cursor: 'grab' }) //set initial rotationY so the parallax jump happens off screen
@@ -34,7 +29,6 @@ async function createTimelineWithImages() {
             z: -500,
             backgroundImage: (i) => {
                 urlImage = 'url("' + imageUrls[i] + '")';
-                console.log(urlImage);
                 return urlImage;
             },
             backgroundPosition: (i) => getBgPos(i),
@@ -56,9 +50,9 @@ async function createTimelineWithImages() {
                 gsap.to('.img', { opacity: 1, ease: 'power2.inOut' })
             })
         }, '-=0.5')
+
 }
 
-createTimelineWithImages();
 
 $(window).on('mousedown touchstart', dragStart);
 $(window).on('mouseup touchend', dragEnd);
