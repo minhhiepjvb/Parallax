@@ -22,6 +22,8 @@ async function fetchRandomImages() {
     }
 }
 
+createTimeLine();
+
 async function createTimeLine() {
     const imageUrls = await fetchRandomImages();
 
@@ -56,7 +58,7 @@ async function createTimeLine() {
         }, '-=0.5')
 }
 
-createTimeLine();
+
 
 $(window).on('mousedown touchstart', dragStart);
 $(window).on('mouseup touchend', dragEnd);
