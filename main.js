@@ -2,9 +2,6 @@ let xPos = 0;
 
 const imageAPI = 'https://dog.ceo/api/breeds/image/random';
 
-
-
-
 async function fetchRandomImages() {
     const numberOfImages = 10;
     const imageUrls = [];
